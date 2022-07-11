@@ -1,28 +1,42 @@
 # this will be predict score before submission (i hope so (: )
 
 import pandas as pd
+import matplotlib.pyplot as mpl
+import pickle
+import numpy as np
 
 scoreboard = pd.read_csv('scoreboard.csv')
 
-# sub1 = pd.read_csv('Submission_1\submission.csv')
-# sub2 = pd.read_csv('Submission_2\submission.csv')
+result = pd.read_pickle('result.pkl')
 
-# sub1.info()
+new_sub = pd.read_csv('submission.csv')
 
+referance_df = scoreboard
+referance_df['Sub'] = new_sub['Survived']
 
-# scoreboard = sub1
+referance_df['Difference']=""
 
-# scoreboard['Submission2'] = sub2['Survived']
+for index, row in referance_df.iterrows():
+    if row['Survived'] == row['Sub']:
+        referance_df['Difference'][index] = True
+    else:
+        referance_df['Difference'][index] = False
 
-# scoreboard.rename(columns = {'Survived':'Best_Sol'}, inplace = True)
-# scoreboard['Prediction']=""
+s = referance_df['Difference'].value_counts()
 
-# for index, row in scoreboard.iterrows():
-#     if row['Submission2'] == row['Best_Sol']:
-#         scoreboard['Prediction'][index] = 'True'
-#     else:
-#         scoreboard['Prediction'][index] = 'False'
+score = s[True] /(s[True] + s[False])
 
-# scoreboard.info()
+last = int(result.iloc[-1]['submission'])
 
-scoreboard.to_csv('scoreboard.csv', index = False)
+imp = ((score / np.float64(result.iloc[-1]['score'])) * 100) -100
+
+dict = {'submission': (last+1), 'score': score, 'improvement': imp}
+
+result = result.append(dict, ignore_index = True)
+
+result
+
+result.to_pickle('result.pkl')
+
+mpl.plot(result['submission'], result['score']*100)
+mpl.show()
