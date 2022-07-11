@@ -55,7 +55,22 @@ del fake_data # Delete no longer used data
 train_with_fake_data['IsMale'] = (train_with_fake_data['Sex'] == 'male').astype(int) 
 test_with_fake_data['IsMale'] = (test_with_fake_data['Sex'] == 'male').astype(int)
 
-predictors = ['Pclass', 'IsMale', 'Age']
+
+#* I'll be creating a new column for the "SibSp" column.
+#* range of SibSp ->  0 < SibSp < 8
+#* If SibSp < 4 then SS = 0
+#* Else SS = 1
+
+train_with_fake_data['SS'] = 0
+test_with_fake_data['SS'] = 0
+
+for index, row in train_with_fake_data.iterrows():
+    train_with_fake_data['SS'][index] = 0 if row['SibSp'] < 4 else 1
+
+for index, row in test_with_fake_data.iterrows():
+    test_with_fake_data['SS'][index] = 0 if row['SibSp'] < 4 else 1
+
+predictors = ['Pclass', 'IsMale', 'Age', 'SS']
 
 X_train_f = train_with_fake_data[predictors].values
 X_test_f = test_with_fake_data[predictors].values
@@ -77,14 +92,15 @@ output_f.to_csv('submission.csv', index=False)
 
 compare_with_local_best = pd.read_csv('Submission_1\submission.csv') # Score = 0.75837
 
-output_f.compare(compare_with_local_best) # 82 different values, 19.61722 % difference
+comp = output_f.compare(compare_with_local_best) # 52 different values, 12.44019 % difference
 
 ###########
 # Spoiler #
 ###########
 
-# Score: 0.73444
-# Improvement: -3.25826 %
+# Score: 0.74880
+# Improvement vs Last: +1.95523 % 
+# Improvement vs Best: -1.26192 % 
 
 ###########
 # Spoiler #
