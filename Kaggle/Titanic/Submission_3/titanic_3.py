@@ -104,6 +104,7 @@ comp = output_f.compare(compare_with_local_best) # 52 different values, 12.44019
 
 # i added this line so i get an extra commit on github lol
 # same lol
+# same lol 17/07/2022
  
 ###########
 # Spoiler #
